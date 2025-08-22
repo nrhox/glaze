@@ -6,7 +6,7 @@ It provides minimal overhead, clean API, and zero dependency (except stdlib).
 ## Installation
 
 ```bash
-go get github.com/yourname/glaze
+go get github.com/nrhox/glaze
 ```
 
 ## Quick Start
