@@ -28,27 +28,27 @@ type RouteInfo struct {
 	Path   string
 }
 
-// IRouter is the main interface for grouping and
+// Router is the main interface for grouping and
 // registering routes. It embeds IRoutes for HTTP
 // method helpers and adds Group for sub-routes.
-type IRouter interface {
-	IRoutes
+type Router interface {
+	Routes
 	Group(string, ...HandlerFunc) *Route
 }
 
-// IRoutes defines the basic routing methods available
+// Routes defines the basic routing methods available
 // for each HTTP method, and also allows attaching
 // middleware with Use.
-type IRoutes interface {
-	Use(...HandlerFunc) IRoutes
+type Routes interface {
+	Use(...HandlerFunc) Routes
 
-	Get(string, ...HandlerFunc) IRoutes
-	Post(string, ...HandlerFunc) IRoutes
-	Delete(string, ...HandlerFunc) IRoutes
-	Patch(string, ...HandlerFunc) IRoutes
-	Put(string, ...HandlerFunc) IRoutes
-	Options(string, ...HandlerFunc) IRoutes
-	Head(string, ...HandlerFunc) IRoutes
+	Get(string, ...HandlerFunc) Routes
+	Post(string, ...HandlerFunc) Routes
+	Delete(string, ...HandlerFunc) Routes
+	Patch(string, ...HandlerFunc) Routes
+	Put(string, ...HandlerFunc) Routes
+	Options(string, ...HandlerFunc) Routes
+	Head(string, ...HandlerFunc) Routes
 }
 
 // Route represents a registered route or a route group.
@@ -63,14 +63,14 @@ type Route struct {
 }
 
 // ensure Route implements IRouter
-var _ IRouter = (*Route)(nil)
+var _ Router = (*Route)(nil)
 
 var (
-	regEnLetter = regexp.MustCompile("^[A-Z]+$")
+	regexMethodLetter = regexp.MustCompile("^[A-Z]+$")
 )
 
 // Use appends middleware handlers to the route or group.
-func (r *Route) Use(middleware ...HandlerFunc) IRoutes {
+func (r *Route) Use(middleware ...HandlerFunc) Routes {
 	r.Handler = append(r.Handler, middleware...)
 	return r.engineInfo()
 }
@@ -87,8 +87,8 @@ func (r *Route) Group(path string, handlers ...HandlerFunc) *Route {
 
 // handle registers a new route with the given HTTP method,
 // relative path, and handlers.
-func (r *Route) handle(method, relativePath string, handlers ...HandlerFunc) IRoutes {
-	if matched := regEnLetter.MatchString(method); !matched {
+func (r *Route) handle(method, relativePath string, handlers ...HandlerFunc) Routes {
+	if matched := regexMethodLetter.MatchString(method); !matched {
 		panic("invalid method '" + method + "'")
 	}
 	absolutePath := r.jointAbsolutePath(relativePath)
@@ -97,25 +97,25 @@ func (r *Route) handle(method, relativePath string, handlers ...HandlerFunc) IRo
 	return r.engineInfo()
 }
 
-func (r *Route) Get(path string, handler ...HandlerFunc) IRoutes {
+func (r *Route) Get(path string, handler ...HandlerFunc) Routes {
 	return r.handle(http.MethodGet, path, handler...)
 }
-func (r *Route) Post(path string, handler ...HandlerFunc) IRoutes {
+func (r *Route) Post(path string, handler ...HandlerFunc) Routes {
 	return r.handle(http.MethodPost, path, handler...)
 }
-func (r *Route) Put(path string, handler ...HandlerFunc) IRoutes {
+func (r *Route) Put(path string, handler ...HandlerFunc) Routes {
 	return r.handle(http.MethodPut, path, handler...)
 }
-func (r *Route) Delete(path string, handler ...HandlerFunc) IRoutes {
+func (r *Route) Delete(path string, handler ...HandlerFunc) Routes {
 	return r.handle(http.MethodDelete, path, handler...)
 }
-func (r *Route) Patch(path string, handler ...HandlerFunc) IRoutes {
+func (r *Route) Patch(path string, handler ...HandlerFunc) Routes {
 	return r.handle(http.MethodPatch, path, handler...)
 }
-func (r *Route) Options(path string, handler ...HandlerFunc) IRoutes {
+func (r *Route) Options(path string, handler ...HandlerFunc) Routes {
 	return r.handle(http.MethodOptions, path, handler...)
 }
-func (r *Route) Head(path string, handler ...HandlerFunc) IRoutes {
+func (r *Route) Head(path string, handler ...HandlerFunc) Routes {
 	return r.handle(http.MethodHead, path, handler...)
 }
 
@@ -158,7 +158,7 @@ func joinPath(absolutePath, relativePath string) string {
 
 // engineInfo returns the IRoutes reference,
 // pointing back to the engine if this is the root group.
-func (group *Route) engineInfo() IRoutes {
+func (group *Route) engineInfo() Routes {
 	if group.root {
 		return group.engine
 	}

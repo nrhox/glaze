@@ -30,7 +30,7 @@ type Engine struct {
 }
 
 // make sure Engine implement IRouter
-var _ IRouter = (*Engine)(nil)
+var _ Router = (*Engine)(nil)
 
 // ConfigsFunc is a function type that change engine configuration.
 type ConfigsFunc func(*Engine)
