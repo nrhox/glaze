@@ -29,7 +29,7 @@ type RouteInfo struct {
 }
 
 // Router is the main interface for grouping and
-// registering routes. It embeds IRoutes for HTTP
+// registering routes. It embeds Routes for HTTP
 // method helpers and adds Group for sub-routes.
 type Router interface {
 	Routes
@@ -156,7 +156,7 @@ func joinPath(absolutePath, relativePath string) string {
 	return finalPath
 }
 
-// engineInfo returns the IRoutes reference,
+// engineInfo returns the Routes reference,
 // pointing back to the engine if this is the root group.
 func (group *Route) engineInfo() Routes {
 	if group.root {

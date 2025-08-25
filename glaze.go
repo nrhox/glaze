@@ -29,7 +29,7 @@ type Engine struct {
 	trees           map[string]*node // route trees (per method)
 }
 
-// make sure Engine implement IRouter
+// make sure Engine implement Router
 var _ Router = (*Engine)(nil)
 
 // ConfigsFunc is a function type that change engine configuration.
