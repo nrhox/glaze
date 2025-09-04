@@ -185,7 +185,7 @@ func (c *Context) SaveFile(file *multipart.FileHeader, dst string, perm ...fs.Fi
 }
 
 // SetCookie add a cookie into response.
-func (c *Context) SetCookie(name, value, path, domain string, mazAge int, secure bool, httpOnly bool, sameSite http.SameSite) {
+func (c *Context) SetCookie(name, value string, maxAge int, path, domain string, secure bool, httpOnly bool, sameSite http.SameSite) {
 	if path == "" {
 		path = "/"
 	}
@@ -194,7 +194,7 @@ func (c *Context) SetCookie(name, value, path, domain string, mazAge int, secure
 		Value:    url.QueryEscape(value),
 		Path:     path,
 		Domain:   domain,
-		MaxAge:   mazAge,
+		MaxAge:   maxAge,
 		Secure:   secure,
 		HttpOnly: httpOnly,
 		SameSite: sameSite,
