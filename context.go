@@ -148,6 +148,11 @@ func (c *Context) FormFile(name string) (*multipart.FileHeader, error) {
 	return fh, err
 }
 
+// Form returns the first value for the named component of the POST, PUT, or PATCH request body
+func (c *Context) Form(name string) string {
+	return c.Request.PostFormValue(name)
+}
+
 // MultipartForm return multipart form data from request.
 func (c *Context) MultipartForm() (*multipart.Form, error) {
 	err := c.Request.ParseMultipartForm(c.engine.MultipartMemory)
@@ -155,7 +160,7 @@ func (c *Context) MultipartForm() (*multipart.Form, error) {
 }
 
 // SaveFile save uploaded file to destination path.
-func (c *Context) SaveFile(file *multipart.FileHeader, dst string, perm ...fs.FileMode) error {
+func (c *Context) SaveFile(file *multipart.FileHeader, dst string, perm []fs.FileMode, writers ...io.Writer) error {
 	src, err := file.Open()
 	if err != nil {
 		return err
@@ -180,7 +185,10 @@ func (c *Context) SaveFile(file *multipart.FileHeader, dst string, perm ...fs.Fi
 	}
 	defer out.Close()
 
-	_, err = io.Copy(out, src)
+	writers = append(writers, out)
+	writer := io.MultiWriter(writers...)
+
+	_, err = io.Copy(writer, src)
 	return err
 }
 
